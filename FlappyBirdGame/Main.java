@@ -10,7 +10,7 @@ public class Main {
         frame.setIconImage(icon);
         frame.setResizable(false);
         frame.add(bird);
-        frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         bird.requestFocus();
         frame.setVisible(true);
         frame.pack();
