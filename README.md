@@ -1,2 +1,2 @@
 # Projects
-## 1. Flappy Bird Game
+## 1. Flappy Bird Game ![alt text](image.png)
