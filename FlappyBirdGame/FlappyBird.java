@@ -114,8 +114,10 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener{
         }
     }
     public void flap(){
-        birdVelDown=birdVelUp;
-        playSound(flapSound);
+        if(!gameOver){
+            birdVelDown=birdVelUp;
+            playSound(flapSound);
+        }
     }
     public void score(Bird bird, Pipe pipe){
         if(bird.x >= pipe.x && pipe.giveScore){
