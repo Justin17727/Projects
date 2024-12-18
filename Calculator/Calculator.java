@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Scanner;
 class Calculator implements ActionListener{
     double a = 0, b = 0, result = 0;
     int symbol = -1;
@@ -66,7 +67,72 @@ class Calculator implements ActionListener{
         frame.setVisible(true);
     }
     public static void main(String[] args){
-        new Calculator();
+        Scanner s = new Scanner(System.in);
+        Calculator c = new Calculator();
+        System.out.println("Enter the expression: ");
+        String a = s.nextLine();
+        System.out.println(c.infixToPostfix(a));
+        s.close();
+    }
+    public int priority(char a){
+        switch (a){
+            case '(':
+            case ')':
+                return 0;
+            case '+':
+            case '-':
+                return 1;
+            case '*':
+            case '/':
+                return 2;
+            case '^':
+                return 3;
+            default:
+                return -1;
+        }
+    }
+    public StringBuffer infixToPostfix(String str){
+        StringBuffer s = new StringBuffer(str);
+        StringBuffer postfix = new StringBuffer("");
+        char stack[] = new char[s.length()];
+        int top = -1;
+        stack[++top] = '(';
+        s.append(")");
+        for(int i = 0; i < str.length(); i++){
+            if(Character.isDigit(s.charAt(i)) || s.charAt(i) == '.'){
+                while(Character.isDigit(s.charAt(i))){
+                    postfix.append(s.charAt(i));
+                    i++;
+                }
+                postfix.append(' ');
+                i--;
+            }
+            else if(s.charAt(i) == '('){
+                stack[++top] = s.charAt(i);
+            }
+            else if(s.charAt(i) == ')'){
+                while(stack[top] != '('){
+                    postfix.append(stack[top--]);
+                    postfix.append(' ');
+                }
+                top--;
+            }
+            else if(priority(s.charAt(i)) > 0){
+                while(priority(s.charAt(i)) < priority(stack[top]) || (priority(s.charAt(i)) == priority(stack[top]) && s.charAt(i) != '^')){
+                    postfix.append(stack[top--]);
+                    postfix.append(' ');
+                }
+                stack[++top] = s.charAt(i);
+            }
+            System.out.println(postfix);
+        }
+        while(top != 0){
+            postfix.append(stack[top--]);
+            postfix.append(' ');
+        }
+        System.out.println(postfix);
+        System.out.println("Done");
+        return postfix;
     }
     @Override
     public void actionPerformed(ActionEvent e){
