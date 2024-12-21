@@ -2,8 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 class Calculator implements ActionListener{
-    double a = 0, b = 0, result = 0;
-    int symbol = -1;
     boolean remove = false;
     String str = "";
     JFrame frame = new JFrame();
@@ -82,58 +80,19 @@ class Calculator implements ActionListener{
         }
         for(int i = 0; i < 4; i++){
             if(e.getSource() == opButton[i]){
-                //a=Double.parseDouble(field.getText());
                 field.setText(field.getText() + opButton[i].getText());
-                //field.setText("");
-                //symbol=i;
             }
         }
         if(e.getSource() == opButton[4]){
             for(int i = 0; i < field.getText().length()-1; i++){
                 str=str+String.valueOf(field.getText().charAt(i));
             }
-            field.setText("");
+            field.setText(str);
             str = "";
         }
         if(e.getSource() == opButton[5]){
             Postfix p = new Postfix(field.getText());
             field.setText(String.valueOf(p.result));
-            /*switch(symbol){
-                case 0:
-                    b = Double.parseDouble(field.getText());
-                    result = a+b;
-                    field.setText(String.valueOf(result));
-                    break;
-                case 1:
-                    b = Double.parseDouble(field.getText());
-                    result = a-b;
-                    field.setText(String.valueOf(result));
-                    break;
-                case 2:
-                    b = Double.parseDouble(field.getText());
-                    result = a*b;
-                    field.setText(String.valueOf(result));
-                    break;
-                case 3:
-                    b = Double.parseDouble(field.getText());
-                    if(b != 0){    
-                        result = a/b;
-                        field.setText(String.valueOf(result));
-                    }
-                    else{
-                        field.setForeground(Color.RED);
-                        field.setText("Division by 0");
-                        remove = true;
-                    }
-                    break;
-                default:
-                    break;
-            }
-            a = 0;
-            b = 0;
-            result = 0;
-            symbol = -1;
-            */
         }
     }
 }
