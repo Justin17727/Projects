@@ -27,7 +27,7 @@ class Calculator implements ActionListener{
         opButton[0] = new JButton("+");
         opButton[1] = new JButton("-");
         opButton[2] = new JButton("*");
-        opButton[3] = new JButton("%");
+        opButton[3] = new JButton("/");
         opButton[4] = new JButton("DEL");
         opButton[5] = new JButton("=");
         for(int i = 0; i < 6; i++){

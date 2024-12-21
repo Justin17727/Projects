@@ -36,7 +36,7 @@ class Postfix{
         for(int i = 0; i < str.length(); i++){
             if(Character.isDigit(s.charAt(i)) || s.charAt(i) == '.'){
                 postTop++;
-                while(Character.isDigit(s.charAt(i))){
+                while(Character.isDigit(s.charAt(i)) || s.charAt(i) == '.'){
                     postfix[postTop].append(s.charAt(i));
                     i++;
                 }
