@@ -2,6 +2,7 @@ class Postfix{
     StringBuffer[] postfix;
     int postfixSize;
     double result;
+    boolean status;
     Postfix(String a){
         infixToPostfix(a);
         postfixEval(this.postfix, this.postfixSize);
@@ -14,8 +15,8 @@ class Postfix{
             case '+':
             case '-':
                 return 1;
-            case '*':
-            case '/':
+            case '\u00d7':
+            case '\u00f7':
                 return 2;
             case '^':
                 return 3;
@@ -24,6 +25,9 @@ class Postfix{
         }
     }
     public void infixToPostfix(String str){
+        if(priority(str.charAt(str.length()-1)) > 0){
+            str = new String(str.substring(0, str.length()-1));
+        }
         StringBuffer s = new StringBuffer(str);
         StringBuffer[] postfix = new StringBuffer[str.length()];
         for(int i=0; i<str.length(); i++){
@@ -66,6 +70,7 @@ class Postfix{
         return;
     }
     public void postfixEval(StringBuffer[] s, int size){
+        status = false;
         double[] stack = new double[size];
         int top = -1;
         for(int i = 0; i < size; i++){
@@ -84,12 +89,12 @@ class Postfix{
                     case '-':
                         stack[++top] = a - b;
                         break;
-                    case '*':
+                    case '\u00d7':
                         stack[++top] = a * b;
                         break;
-                    case '/':
+                    case '\u00f7':
                         if(b == 0){
-                            System.out.println("Cannot divide by zero!");
+                            status = true;
                             return;
                         }
                         stack[++top] = a / b;

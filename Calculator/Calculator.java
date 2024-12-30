@@ -17,6 +17,7 @@ class Calculator implements ActionListener{
         panel.setBackground(new Color(254, 215, 191));
         for(int i = 0; i < 10; i++){
             numButton[i] = new JButton(String.valueOf(i));
+            numButton[i].setFont(new Font("Arial", Font.PLAIN, 20));
             numButton[i].setFocusable(false);
             numButton[i].addActionListener(this);
             numButton[i].setBackground(new Color(228, 175, 176));
@@ -24,12 +25,13 @@ class Calculator implements ActionListener{
         }
         opButton[0] = new JButton("+");
         opButton[1] = new JButton("-");
-        opButton[2] = new JButton("*");
-        opButton[3] = new JButton("/");
+        opButton[2] = new JButton("\u00d7");
+        opButton[3] = new JButton("\u00f7");
         opButton[4] = new JButton("DEL");
         opButton[5] = new JButton("=");
         for(int i = 0; i < 6; i++){
             opButton[i].setFocusable(false);
+            opButton[i].setFont(new Font("Arial", Font.PLAIN, 20));
             opButton[i].addActionListener(this);
             opButton[i].setBackground(new Color(228, 175, 176));
             opButton[i].setForeground(new Color(154, 119, 135));
@@ -71,6 +73,7 @@ class Calculator implements ActionListener{
         if(remove){
             remove = false;
             field.setForeground(new Color(154, 119, 135));
+            field.setFont(new Font("Arial", Font.PLAIN, 40));
             field.setText("");
         }
         for(int i = 0; i < 10; i++){
@@ -80,6 +83,14 @@ class Calculator implements ActionListener{
         }
         for(int i = 0; i < 4; i++){
             if(e.getSource() == opButton[i]){
+                if(field.getText().length() == 0){
+                    return;
+                }
+                for(int j=0; j < 4; j++){
+                    if(field.getText().endsWith(opButton[j].getText())){
+                        field.setText(field.getText().substring(0, field.getText().length()-1));
+                    }
+                }
                 field.setText(field.getText() + opButton[i].getText());
             }
         }
@@ -91,8 +102,23 @@ class Calculator implements ActionListener{
             str = "";
         }
         if(e.getSource() == opButton[5]){
+            if(field.getText().length() == 0){
+                remove = true;
+                field.setForeground(Color.RED);
+                field.setFont(new Font("Araial", Font.PLAIN, 30));
+                field.setText("Enter An Expression!");
+                return;
+            }
             Postfix p = new Postfix(field.getText());
-            field.setText(String.valueOf(p.result));
+            remove = p.status;
+            if(remove){
+                field.setForeground(Color.RED);
+                field.setFont(new Font("Arial", Font.PLAIN, 30));
+                field.setText("Cannot Divide By 0!");
+            }
+            else{
+                field.setText(String.valueOf(p.result));
+            }
         }
     }
 }
