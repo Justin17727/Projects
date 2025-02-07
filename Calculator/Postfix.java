@@ -38,9 +38,19 @@ class Postfix{
         stack[++top] = '(';
         s.append(")");
         for(int i = 0; i < str.length(); i++){
-            if(Character.isDigit(s.charAt(i)) || s.charAt(i) == '.'){
+            if(i == 0 && s.charAt(i) == '-'){
                 postTop++;
-                while(Character.isDigit(s.charAt(i)) || s.charAt(i) == '.'){
+                postfix[postTop].append(s.charAt(i));
+                i++;
+                while(Character.isDigit(s.charAt(i)) || s.charAt(i) == '.' || s.charAt(i) == 'E' || (s.charAt(i) == '-' && s.charAt(i-1) == 'E')){
+                    postfix[postTop].append(s.charAt(i));
+                    i++;
+                }
+                i--;
+            }
+            else if(Character.isDigit(s.charAt(i)) || s.charAt(i) == '.' || s.charAt(i) == 'E' || (s.charAt(i) == '-' && s.charAt(i-1) == 'E')){
+                postTop++;
+                while(Character.isDigit(s.charAt(i)) || s.charAt(i) == '.' || s.charAt(i) == 'E' || (s.charAt(i) == '-' && s.charAt(i-1) == 'E')){
                     postfix[postTop].append(s.charAt(i));
                     i++;
                 }
@@ -56,10 +66,29 @@ class Postfix{
                 top--;
             }
             else if(priority(s.charAt(i)) > 0){
-                while(priority(s.charAt(i)) < priority(stack[top]) || (priority(s.charAt(i)) == priority(stack[top]) && s.charAt(i) != '^')){
-                    postfix[++postTop].append(stack[top--]);
+                if(s.charAt(i) == '-' && Character.isDigit(s.charAt(i+1))){
+                    int index = i;
+                    postTop++;
+                    postfix[postTop].append(s.charAt(i));
+                    i++;
+                    while(Character.isDigit(s.charAt(i)) || s.charAt(i) == '.' || s.charAt(i) == 'E' || (s.charAt(i) == '-' && s.charAt(i-1) == 'E')){
+                        postfix[postTop].append(s.charAt(i));
+                        i++;
+                    }
+                    i--;
+                    if(priority(s.charAt(index-1)) > 0){
+                        continue;
+                    }
+                    else{
+                        stack[++top] = '+';
+                    }
                 }
-                stack[++top] = s.charAt(i);
+                else{
+                    while(priority(s.charAt(i)) < priority(stack[top]) || (priority(s.charAt(i)) == priority(stack[top]) && s.charAt(i) != '^')){
+                        postfix[++postTop].append(stack[top--]);
+                    }
+                    stack[++top] = s.charAt(i);
+                }
             }
         }
         while(top != 0){

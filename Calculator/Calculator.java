@@ -87,6 +87,19 @@ class Calculator implements ActionListener{
                     return;
                 }
                 for(int j=0; j < 4; j++){
+                    if(field.getText().endsWith(opButton[j].getText()) && e.getSource() == opButton[1]){
+                        if(field.getText().endsWith(opButton[1].getText()) || field.getText().endsWith(opButton[0].getText())){
+                            field.setText(field.getText().substring(0, field.getText().length()-1));
+                            field.setText(field.getText() + opButton[i].getText());
+                            return;
+                        }
+                        else{
+                            field.setText(field.getText() + opButton[i].getText());
+                            return;
+                        }
+                    }
+                }
+                for(int j=0; j < 4; j++){
                     if(field.getText().endsWith(opButton[j].getText())){
                         field.setText(field.getText().substring(0, field.getText().length()-1));
                     }
