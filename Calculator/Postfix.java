@@ -4,6 +4,9 @@ class Postfix{
     double result;
     boolean status;
     Postfix(String a){
+        if(a == null){
+            return;
+        }
         infixToPostfix(a);
         postfixEval(this.postfix, this.postfixSize);
     }

@@ -83,8 +83,19 @@ class Calculator implements ActionListener{
         }
         for(int i = 0; i < 4; i++){
             if(e.getSource() == opButton[i]){
-                if(field.getText().length() == 0){
+                if(field.getText().length() == 0 && e.getSource() == opButton[1]){
+                    field.setText(field.getText() + opButton[i].getText());
                     return;
+                }
+                else if(field.getText().length() == 0){
+                    return;
+                }
+                else if(field.getText().length() == 1){
+                    for(int j = 0; j < 4; j++){
+                        if(field.getText().equals(opButton[j].getText())){
+                            return;
+                        }
+                    }
                 }
                 for(int j=0; j < 4; j++){
                     if(field.getText().endsWith(opButton[j].getText()) && e.getSource() == opButton[1]){
@@ -120,6 +131,9 @@ class Calculator implements ActionListener{
                 field.setForeground(Color.RED);
                 field.setFont(new Font("Araial", Font.PLAIN, 30));
                 field.setText("Enter An Expression!");
+                return;
+            }
+            if(field.getText().length() == 1 && field.getText().equals("-")){
                 return;
             }
             Postfix p = new Postfix(field.getText());
