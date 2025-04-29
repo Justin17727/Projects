@@ -88,6 +88,28 @@ def collision(snake_coordinates: list[list[int]]) -> bool:
             return True
         elif coord[1] >= 50:
             return True
+    return False
+
+
+def search(snake_coordinates: list[list[int]], item: list[int]) -> bool:
+    # search the item excluding the first
+    s = 0
+    for coord in snake_coordinates:
+        if s == 0:
+            s += 1
+            continue
+        if coord == item:
+            return True
+        s += 1
+    return False
+
+
+def snake_collision(snake_coordinates: list[list[int]]) -> bool:
+    # collision with snake itself
+    pixel: list[int] = snake_coordinates[0]
+    if search(snake_coordinates, pixel):
+        return True
+    return False
 
 
 def work(window: tk.Frame):
@@ -95,26 +117,13 @@ def work(window: tk.Frame):
     try:
         update(snek, x, y)
         paint(snek)
-        if collision(snek):
+        if collision(snek) or snake_collision(snek):
             root.destroy()
         window.after(120, work, window)
     except Exception as e:
         root.destroy()
 
 
-'''def start():
-    # start the timer here for regular update and direction setting
-    # try:
-    while True:
-        update(snek, x, y)
-        paint(snek)
-        time.sleep(1/10)
-    except Exception as e:
-        print(e)
-        root.destroy()
-    pass
-
-'''
 x = 0
 y = 1
 a = 25
