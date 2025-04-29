@@ -1,4 +1,5 @@
 import tkinter as tk
+import random
 
 
 def update(snake_coordinates: list[list[int]], x_direction: int, y_direction: int) -> None:
@@ -112,10 +113,27 @@ def snake_collision(snake_coordinates: list[list[int]]) -> bool:
     return False
 
 
+def place_apple() -> list[int]:
+    # place an apple on window
+    loc_x = random.randint(0, 49)
+    loc_y = random.randint(0, 49)
+    apple.grid(row=loc_y, column=loc_x, sticky='nswe')
+    return [loc_y, loc_x]
+
+
+def apple_logic(snake_coordinates: list[list[int]], apple_coordinates: list[list[int]]):
+    # check if apple is eaten and then respawn an apple
+    global loc
+    if apple_coordinates[0] == snake_coordinates[0]:
+        loc.clear()
+        loc.append(place_apple())
+
+
 def work(window: tk.Frame):
     # time scheduled updates
     try:
         update(snek, x, y)
+        apple_logic(snek, loc)
         paint(snek)
         if collision(snek) or snake_collision(snek):
             root.destroy()
@@ -131,6 +149,8 @@ b = 25
 root = tk.Tk()
 snake: list[tk.Frame] = []
 snek: list[list[int]] = []
+apple: tk.Frame = tk.Frame(root, width=1, height=1, bg='red')
+loc: list[list[int]] = []
 for m in range(25):
     snake.append(tk.Frame(root, width=1, height=1, bg='green'))
     snek.append([a + m, b])
@@ -142,6 +162,8 @@ for m in range(25):
     snake[m].grid(row=a + m, column=b)
 root.bind('<KeyPress>', on_key_press)
 root.title('Snake Game')
+root.minsize(height=500, width=500)
 root.maxsize(height=500, width=500)
+loc.append(place_apple())
 root.after(120, work, root)
 root.mainloop()
