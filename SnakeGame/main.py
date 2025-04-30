@@ -6,6 +6,7 @@ def update(snake_coordinates: list[list[int]], x_direction: int, y_direction: in
     # use it to update the snake coordinates
     count = 0
     global a, b
+    apple_loc.append(snake_coordinates[-1])
     if x_direction == 1 and y_direction == 0:
         for coordinates in snake_coordinates:
             if count == 0:
@@ -115,21 +116,41 @@ def snake_collision(snake_coordinates: list[list[int]]) -> bool:
 
 def place_apple() -> list[int]:
     # place an apple on window
-    loc_x = random.randint(0, 49)
-    loc_y = random.randint(0, 49)
-    apple.grid(row=loc_y, column=loc_x, sticky='nswe')
-    return [loc_y, loc_x]
+    index = random.randint(0, len(apple_loc) - 1)
+    apple.grid(row=apple_loc[index][1], column=apple_loc[index][0], sticky='nswe')
+    return [apple_loc[index][1], apple_loc[index][0]]
 
 
-def apple_logic(snake_coordinates: list[list[int]], apple_coordinates: list[list[int]]):
+def snake_growth(snake_coordinates: list[list[int]], snake_frame: list[tk.Frame]):
+    # grow snake longer by 1 block
+    new: tk.Frame = tk.Frame(root,  width=1, height=1, bg='green')
+    snake_frame.append(new)
+    if x != 0:
+        if x == 1:
+            loc_x, loc_y = snake_coordinates[-1]
+            snake_coordinates.append([loc_x, loc_y + 1])
+        else:
+            loc_x, loc_y = snake_coordinates[-1]
+            snake_coordinates.append([loc_x, loc_y - 1])
+    else:
+        if y == 1:
+            loc_x, loc_y = snake_coordinates[-1]
+            snake_coordinates.append([loc_x + 1, loc_y])
+        else:
+            loc_x, loc_y = snake_coordinates[-1]
+            snake_coordinates.append([loc_x - 1, loc_y])
+
+
+def apple_logic(snake_coordinates: list[list[int]], apple_coordinates: list[list[int]]) -> None:
     # check if apple is eaten and then respawn an apple
     global loc
     if apple_coordinates[0] == snake_coordinates[0]:
         loc.clear()
         loc.append(place_apple())
+        snake_growth(snake_coordinates, snake)
 
 
-def work(window: tk.Frame):
+def work(window: tk.Frame) -> None:
     # time scheduled updates
     try:
         update(snek, x, y)
@@ -142,18 +163,23 @@ def work(window: tk.Frame):
         root.destroy()
 
 
-x = 0
-y = 1
-a = 25
-b = 25
-root = tk.Tk()
+x: int = 0
+y: int = 1
+a: int = 25
+b: int = 25
+root: tk.Tk = tk.Tk()
 snake: list[tk.Frame] = []
 snek: list[list[int]] = []
 apple: tk.Frame = tk.Frame(root, width=1, height=1, bg='red')
+apple_loc: list[list[int]] = []
+for i in range(50):
+    for j in range(50):
+        apple_loc.append([i, j])
 loc: list[list[int]] = []
 for m in range(25):
     snake.append(tk.Frame(root, width=1, height=1, bg='green'))
     snek.append([a + m, b])
+    apple_loc.remove([a + m, b])
 root.geometry('500x500')
 for i in range(0, 50):
     root.grid_rowconfigure(i, weight=10, pad=0)
