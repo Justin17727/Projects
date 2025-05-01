@@ -53,20 +53,16 @@ def on_key_press(event) -> bool:
     # use it to set directions
     global x, y
     if event.keysym == 'Up' and y != -1:
-        x = 0
-        y = 1
+        x, y = 0, 1
         return True
     if event.keysym == 'Down' and y != 1:
-        x = 0
-        y = -1
+        x, y = 0, -1
         return True
     if event.keysym == 'Right' and x != -1:
-        x = 1
-        y = 0
+        x, y = 1, 0
         return True
     if event.keysym == 'Left' and x != 1:
-        x = -1
-        y = 0
+        x, y = -1, 0
         return True
     return False
 
@@ -116,14 +112,15 @@ def snake_collision(snake_coordinates: list[list[int]]) -> bool:
 
 def place_apple() -> list[int]:
     # place an apple on window
-    index = random.randint(0, len(apple_loc) - 1)
-    apple.grid(row=apple_loc[index][1], column=apple_loc[index][0], sticky='nswe')
-    return [apple_loc[index][1], apple_loc[index][0]]
+    index = random.choice([place for place in apple_loc if place not in snek])
+    apple.grid(row=index[1], column=index[0], sticky='nswe')
+    return [index[1], index[0]]
 
 
 def snake_growth(snake_coordinates: list[list[int]], snake_frame: list[tk.Frame]):
     # grow snake longer by 1 block
-    new: tk.Frame = tk.Frame(root,  width=1, height=1, bg='green')
+    global apple_loc
+    new: tk.Frame = tk.Frame(panel,  width=1, height=1, bg='green')
     snake_frame.append(new)
     if x != 0:
         if x == 1:
@@ -143,7 +140,9 @@ def snake_growth(snake_coordinates: list[list[int]], snake_frame: list[tk.Frame]
 
 def score_display():
     # display score
-
+    global score, score_card
+    score += 1
+    score_card.config(text=f'Score: {score}')
     pass
 
 
@@ -151,7 +150,7 @@ def apple_logic(snake_coordinates: list[list[int]], apple_coordinates: list[list
     # check if apple is eaten and then respawn an apple
     global loc, score
     if apple_coordinates[0] == snake_coordinates[0]:
-        score += 1
+        score_display()
         loc.clear()
         loc.append(place_apple())
         snake_growth(snake_coordinates, snake)
@@ -167,6 +166,7 @@ def work(window: tk.Frame) -> None:
             root.destroy()
         window.after(120, work, window)
     except Exception as e:
+        print(e)
         root.destroy()
 
 
@@ -178,26 +178,32 @@ score: int = 0
 root: tk.Tk = tk.Tk()
 snake: list[tk.Frame] = []
 snek: list[list[int]] = []
-apple: tk.Frame = tk.Frame(root, width=10, height=10, bg='red')
+panel: tk.Frame = tk.Frame(root, width=500, height=500, bg='#fff2cc')
+apple: tk.Frame = tk.Frame(panel, width=10, height=10, bg='red')
 apple_loc: list[list[int]] = []
+for element1 in range(50):
+    for element2 in range(50):
+        apple_loc.append([element1, element2])
+score_card: tk.Label = tk.Label(root, text=f'Score: {score}')
 for i in range(50):
     for j in range(50):
         apple_loc.append([i, j])
 loc: list[list[int]] = []
 for m in range(25):
-    snake.append(tk.Frame(root, width=10, height=10, bg='green'))
+    snake.append(tk.Frame(panel, width=10, height=10, bg='green'))
     snek.append([a + m, b])
     apple_loc.remove([a + m, b])
-root.geometry('500x500')
+root.geometry('500x550')
 for i in range(0, 50):
-    root.grid_rowconfigure(i, minsize=10)
-    root.grid_columnconfigure(i, minsize=10)
+    panel.grid_rowconfigure(i, minsize=10)
+    panel.grid_columnconfigure(i, minsize=10)
 for m in range(25):
     snake[m].grid(row=a + m, column=b)
 root.bind('<KeyPress>', on_key_press)
 root.title('Snake Game')
-root.minsize(height=500, width=500)
 root.resizable(False, False)
+panel.pack(pady=20, expand=True, fill='x')
 loc.append(place_apple())
+score_card.place(x=225, y=0)
 root.after(120, work, root)
 root.mainloop()
