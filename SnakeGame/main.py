@@ -2,69 +2,73 @@ import tkinter as tk
 import random
 
 
-def update(snake_coordinates: list[list[int]], x_direction: int, y_direction: int) -> None:
+def update(x_direction: int, y_direction: int) -> None:
     # use it to update the snake coordinates
     count = 0
-    global a, b
-    apple_loc.append(snake_coordinates[-1])
+    global snake_head_y_pos, snake_head_x_pos, snek
+    apple_loc.append(snek[-1])
     if x_direction == 1 and y_direction == 0:
-        for coordinates in snake_coordinates:
+        for coordinates in snek:
             if count == 0:
                 count += 1
-                a = coordinates[0]
-                b = coordinates[1]
+                snake_head_y_pos = coordinates[0]
+                snake_head_x_pos = coordinates[1]
                 coordinates[1] += 1
                 continue
-            coordinates[0], a = a, coordinates[0]
-            coordinates[1], b = b, coordinates[1]
+            coordinates[0], snake_head_y_pos = snake_head_y_pos, coordinates[0]
+            coordinates[1], snake_head_x_pos = snake_head_x_pos, coordinates[1]
     if x_direction == -1 and y_direction == 0:
-        for coordinates in snake_coordinates:
+        for coordinates in snek:
             if count == 0:
                 count += 1
-                a = coordinates[0]
-                b = coordinates[1]
+                snake_head_y_pos = coordinates[0]
+                snake_head_x_pos = coordinates[1]
                 coordinates[1] -= 1
                 continue
-            coordinates[0], a = a, coordinates[0]
-            coordinates[1], b = b, coordinates[1]
+            coordinates[0], snake_head_y_pos = snake_head_y_pos, coordinates[0]
+            coordinates[1], snake_head_x_pos = snake_head_x_pos, coordinates[1]
     if x_direction == 0 and y_direction == 1:
-        for coordinates in snake_coordinates:
+        for coordinates in snek:
             if count == 0:
                 count += 1
-                a = coordinates[0]
-                b = coordinates[1]
+                snake_head_y_pos = coordinates[0]
+                snake_head_x_pos = coordinates[1]
                 coordinates[0] -= 1
                 continue
-            coordinates[0], a = a, coordinates[0]
-            coordinates[1], b = b, coordinates[1]
+            coordinates[0], snake_head_y_pos = snake_head_y_pos, coordinates[0]
+            coordinates[1], snake_head_x_pos = snake_head_x_pos, coordinates[1]
     if x_direction == 0 and y_direction == -1:
-        for coordinates in snake_coordinates:
+        for coordinates in snek:
             if count == 0:
                 count += 1
-                a = coordinates[0]
-                b = coordinates[1]
+                snake_head_y_pos = coordinates[0]
+                snake_head_x_pos = coordinates[1]
                 coordinates[0] += 1
                 continue
-            coordinates[0], a = a, coordinates[0]
-            coordinates[1], b = b, coordinates[1]
+            coordinates[0], snake_head_y_pos = snake_head_y_pos, coordinates[0]
+            coordinates[1], snake_head_x_pos = snake_head_x_pos, coordinates[1]
 
 
 def on_key_press(event) -> bool:
     # use it to set directions
-    global x, y
-    if event.keysym == 'Up' and y != -1:
-        x, y = 0, 1
-        return True
-    if event.keysym == 'Down' and y != 1:
-        x, y = 0, -1
-        return True
-    if event.keysym == 'Right' and x != -1:
-        x, y = 1, 0
-        return True
-    if event.keysym == 'Left' and x != 1:
-        x, y = -1, 0
-        return True
-    return False
+    global x, y, status_flag
+    if not status_flag:
+        status_flag = True
+        if event.keysym == 'Up' and y != -1:
+            x, y = 0, 1
+            return True
+        if event.keysym == 'Down' and y != 1:
+            x, y = 0, -1
+            return True
+        if event.keysym == 'Right' and x != -1:
+            x, y = 1, 0
+            return True
+        if event.keysym == 'Left' and x != 1:
+            x, y = -1, 0
+            return True
+        return False
+    else:
+        return False
 
 
 def paint(snake_coordinates: list[list[int]]):
@@ -112,9 +116,10 @@ def snake_collision(snake_coordinates: list[list[int]]) -> bool:
 
 def place_apple() -> list[int]:
     # place an apple on window
-    index = random.choice([place for place in apple_loc if place not in snek])
-    apple.grid(row=index[1], column=index[0], sticky='nswe')
-    return [index[1], index[0]]
+    available: list[list[int]] = [place for place in apple_loc if place not in snek]
+    index = random.choice(available)
+    apple.grid(row=index[0], column=index[1], sticky='nswe')
+    return [index[0], index[1]]
 
 
 def snake_growth(snake_coordinates: list[list[int]], snake_frame: list[tk.Frame]):
@@ -158,8 +163,10 @@ def apple_logic(snake_coordinates: list[list[int]], apple_coordinates: list[list
 
 def work(window: tk.Frame) -> None:
     # time scheduled updates
+    global status_flag
     try:
-        update(snek, x, y)
+        update(x, y)
+        status_flag = False
         apple_logic(snek, loc)
         paint(snek)
         if collision(snek) or snake_collision(snek):
@@ -172,8 +179,9 @@ def work(window: tk.Frame) -> None:
 
 x: int = 0
 y: int = 1
-a: int = 25
-b: int = 25
+status_flag: bool = False  # highlighting whether the user has changed direction of snake/ for buffered event handling
+snake_head_y_pos: int = 25  # highlighting row for snake head
+snake_head_x_pos: int = 25  # highlighting column for snake head
 score: int = 0
 root: tk.Tk = tk.Tk()
 snake: list[tk.Frame] = []
@@ -191,14 +199,14 @@ for i in range(50):
 loc: list[list[int]] = []
 for m in range(25):
     snake.append(tk.Frame(panel, width=10, height=10, bg='green'))
-    snek.append([a + m, b])
-    apple_loc.remove([a + m, b])
+    snek.append([snake_head_y_pos + m, snake_head_x_pos])
+    apple_loc.remove([snake_head_y_pos + m, snake_head_x_pos])
 root.geometry('500x550')
 for i in range(0, 50):
     panel.grid_rowconfigure(i, minsize=10)
     panel.grid_columnconfigure(i, minsize=10)
 for m in range(25):
-    snake[m].grid(row=a + m, column=b)
+    snake[m].grid(row=snake_head_y_pos + m, column=snake_head_x_pos)
 root.bind('<KeyPress>', on_key_press)
 root.title('Snake Game')
 root.resizable(False, False)
