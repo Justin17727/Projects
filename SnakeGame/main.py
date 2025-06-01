@@ -2,6 +2,45 @@ import tkinter as tk
 import random
 
 
+def start_over() -> None:
+    # reinitialise everything for restarting the game
+    global x, y, status_flag, game_over_flag, snake_head_x_pos, snake_head_y_pos
+    global score, root, snake, snek, panel, apple, apple_loc, score_card, loc, game_over_text
+    x = 0
+    y = 1
+    status_flag = False
+    game_over_flag = False
+    snake_head_y_pos = 25
+    snake_head_x_pos = 25
+    score = 0
+    for pix in snake:
+        pix.destroy()
+    snake.clear()
+    for text in game_over_text:
+        text.destroy()
+    game_over_text.clear()
+    snek.clear()
+    apple_loc.clear()
+    for e1 in range(50):
+        for e2 in range(50):
+            apple_loc.append([e1, e2])
+    score_card.config(text=f'Score: {score}')
+    for e1 in range(50):
+        for e2 in range(50):
+            apple_loc.append([e1, e2])
+    loc.clear()
+    for s in range(25):
+        snake.append(tk.Frame(panel, width=10, height=10, bg='green'))
+        snek.append([snake_head_y_pos + s, snake_head_x_pos])
+        apple_loc.remove([snake_head_y_pos + s, snake_head_x_pos])
+    for s in range(0, 50):
+        panel.grid_rowconfigure(s, minsize=10)
+        panel.grid_columnconfigure(s, minsize=10)
+    for s in range(25):
+        snake[s].grid(row=snake_head_y_pos + s, column=snake_head_x_pos)
+    loc.append(place_apple())
+
+
 def update(x_direction: int, y_direction: int) -> None:
     # use it to update the snake coordinates
     count = 0
@@ -50,8 +89,8 @@ def update(x_direction: int, y_direction: int) -> None:
 
 
 def on_key_press(event) -> bool:
-    # use it to set directions
-    global x, y, status_flag
+    # use it to set directions or restart game
+    global x, y, status_flag, game_over_flag
     if not status_flag:
         status_flag = True
         if event.keysym == 'Up' and y != -1:
@@ -66,12 +105,17 @@ def on_key_press(event) -> bool:
         if event.keysym == 'Left' and x != 1:
             x, y = -1, 0
             return True
-        return False
+        elif game_over_flag and event.keysym == 'Return':
+            start_over()
+            game_over_flag = False
+            root.after(120, work, root)
+        else:
+            return False
     else:
         return False
 
 
-def paint(snake_coordinates: list[list[int]]):
+def paint(snake_coordinates: list[list[int]]) -> None:
     # place the snake coordinates on screen
     k = 0
     for coord in snake_coordinates:
@@ -122,20 +166,22 @@ def place_apple() -> list[int]:
     return [index[0], index[1]]
 
 
-def snake_growth(snake_coordinates: list[list[int]], snake_frame: list[tk.Frame]):
+def snake_growth(snake_coordinates: list[list[int]], snake_frame: list[tk.Frame]) -> None:
     # grow snake longer by 1 block
     global apple_loc
     new: tk.Frame = tk.Frame(panel,  width=1, height=1, bg='green')
     snake_frame.append(new)
-    if x != 0:
-        if x == 1:
+    pix1: list[int] = snake_coordinates[-1]
+    pix2: list[int] = snake_coordinates[-2]
+    if pix1[0] == pix2[0]:
+        if pix1[1] > pix2[1]:
             loc_x, loc_y = snake_coordinates[-1]
             snake_coordinates.append([loc_x, loc_y + 1])
         else:
             loc_x, loc_y = snake_coordinates[-1]
             snake_coordinates.append([loc_x, loc_y - 1])
     else:
-        if y == 1:
+        if pix1[0] > pix2[0]:
             loc_x, loc_y = snake_coordinates[-1]
             snake_coordinates.append([loc_x + 1, loc_y])
         else:
@@ -143,12 +189,12 @@ def snake_growth(snake_coordinates: list[list[int]], snake_frame: list[tk.Frame]
             snake_coordinates.append([loc_x - 1, loc_y])
 
 
-def score_display():
+def score_display() -> None:
     # display score
     global score, score_card
     score += 1
     score_card.config(text=f'Score: {score}')
-    pass
+    return
 
 
 def apple_logic(snake_coordinates: list[list[int]], apple_coordinates: list[list[int]]) -> None:
@@ -161,6 +207,14 @@ def apple_logic(snake_coordinates: list[list[int]], apple_coordinates: list[list
         snake_growth(snake_coordinates, snake)
 
 
+def game_over() -> None:
+    # to showcase game over screen
+    global game_over_flag, game_over_text
+    game_over_flag = True
+    game_over_text.append(tk.Label(panel, text='Game Over!', font=('Arial', 10)))
+    game_over_text[0].place(x=215, y=225)
+
+
 def work(window: tk.Frame) -> None:
     # time scheduled updates
     global status_flag
@@ -168,9 +222,11 @@ def work(window: tk.Frame) -> None:
         update(x, y)
         status_flag = False
         apple_logic(snek, loc)
-        paint(snek)
         if collision(snek) or snake_collision(snek):
-            root.destroy()
+            game_over()
+            status_flag = False
+            return
+        paint(snek)
         window.after(120, work, window)
     except Exception as e:
         print(e)
@@ -180,6 +236,7 @@ def work(window: tk.Frame) -> None:
 x: int = 0
 y: int = 1
 status_flag: bool = False  # highlighting whether the user has changed direction of snake/ for buffered event handling
+game_over_flag: bool = False  # highlighting whether game has ended
 snake_head_y_pos: int = 25  # highlighting row for snake head
 snake_head_x_pos: int = 25  # highlighting column for snake head
 score: int = 0
@@ -207,6 +264,7 @@ for i in range(0, 50):
     panel.grid_columnconfigure(i, minsize=10)
 for m in range(25):
     snake[m].grid(row=snake_head_y_pos + m, column=snake_head_x_pos)
+game_over_text: list[tk.Label] = []
 root.bind('<KeyPress>', on_key_press)
 root.title('Snake Game')
 root.resizable(False, False)
