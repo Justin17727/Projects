@@ -25,9 +25,6 @@ def start_over() -> None:
         for e2 in range(50):
             apple_loc.append([e1, e2])
     score_card.config(text=f'Score: {score}')
-    for e1 in range(50):
-        for e2 in range(50):
-            apple_loc.append([e1, e2])
     loc.clear()
     for s in range(25):
         snake.append(tk.Frame(panel, width=10, height=10, bg='green'))
