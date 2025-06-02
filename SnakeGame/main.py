@@ -247,9 +247,6 @@ for element1 in range(50):
     for element2 in range(50):
         apple_loc.append([element1, element2])
 score_card: tk.Label = tk.Label(root, text=f'Score: {score}')
-for i in range(50):
-    for j in range(50):
-        apple_loc.append([i, j])
 loc: list[list[int]] = []
 for m in range(25):
     snake.append(tk.Frame(panel, width=10, height=10, bg='green'))
