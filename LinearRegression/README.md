@@ -35,11 +35,11 @@ written as:
 
 <div align="center">
 
-![Mathematical description of the relation](Equations\equation1.svg)
+![Mathematical description of the relation](Equations/equation1.svg)
 
 **or**
 
-![Mathematical description of the relation](Equations\equation2.svg)
+![Mathematical description of the relation](Equations/equation2.svg)
 
 </div>
 
@@ -52,7 +52,7 @@ prediction equation:
 
 <div align="center">
 
-![Approximate prediction equation](Equations\equation3.svg)
+![Approximate prediction equation](Equations/equation3.svg)
 
 </div>
 
@@ -69,7 +69,7 @@ given by:
 
 <div align="center">
 
-![Sum of squared error](Equations\equation4.svg)
+![Sum of squared error](Equations/equation4.svg)
 
 </div>
 
@@ -81,8 +81,8 @@ those terms to get the following:
 
 <div align="center">
 
-![Partial derivative of SSE w.r.t. intercept](Equations\equation5.svg)
-![Partial derivative of SSE w.r.t. slope](Equations\equation6.svg)
+![Partial derivative of SSE w.r.t. intercept](Equations/equation5.svg)
+![Partial derivative of SSE w.r.t. slope](Equations/equation6.svg)
 
 </div>
 
